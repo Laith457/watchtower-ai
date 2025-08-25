@@ -1,0 +1,14 @@
+{
+  "name": "Python 3 & Node.js",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "forwardPorts": [8000],
+  "postCreateCommand": "curl https://wasmtime.dev/install.sh -sSf | bash && pip install -r requirements.txt"
+}
