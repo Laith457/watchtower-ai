@@ -1,24 +1,46 @@
-// استيراد واجهة برمجة تطبيقات VS Code اللازمة
+// Import the necessary parts of the VS Code and axios APIs
 import * as vscode from 'vscode';
+import axios from 'axios';
 
-// هذه الدالة الرئيسية يتم استدعاؤها عند تفعيل الإضافة لأول مرة
+// This function is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
 
     console.log('Congratulations, your extension "watchtower" is now active!');
 
-    // إنشاء "مستمع" يتم تفعيله في كل مرة يتم فيها حفظ أي ملف
-    vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+    // Create a listener that triggers whenever a document is saved
+    vscode.workspace.onDidSaveTextDocument(async (document: vscode.TextDocument) => {
         
-        // التحقق مما إذا كان اسم الملف المحفوظ ينتهي بـ 'package.json'
+        // Check if the saved file is named 'package.json'
         if (document.fileName.endsWith('package.json')) {
             
-            // إذا كان كذلك، أظهر رسالة معلومات للمستخدم في أسفل يمين الشاشة
-            vscode.window.showInformationMessage('Watchtower: A change in package.json was detected!');
+            vscode.window.showInformationMessage('Watchtower: Change detected! Sending to server for analysis...');
             
-            // لاحقًا، سنقوم بإرسال محتوى الملف إلى الخادم الخلفي من هنا
+            // --- NEW CODE STARTS HERE ---
+            try {
+                // The URL of our running Python server's endpoint
+                const serverUrl = 'http://127.0.0.1:8000/analyze';
+                
+                // Get the full text content of the saved file
+                const fileContent = document.getText();
+                
+                // Send the file content to the server using an HTTP POST request
+                const response = await axios.post(serverUrl, {
+                    content: fileContent
+                });
+                
+                // Log the server's response to the debug console
+                console.log('Server response:', response.data);
+                vscode.window.showInformationMessage('Watchtower: Analysis request sent successfully!');
+                
+            } catch (error) {
+                // If an error occurs (e.g., server is not running), show an error message
+                console.error('Error sending data to server:', error);
+                vscode.window.showErrorMessage('Watchtower: Failed to connect to analysis server.');
+            }
+            // --- NEW CODE ENDS HERE ---
         }
     });
 }
 
-// هذه الدالة يتم استدعاؤها عند إيقاف تفعيل الإضافة
+// This function is called when your extension is deactivated
 export function deactivate() {}
