@@ -12,7 +12,7 @@
   "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
+    "commands": [    
       {
         "command": "watchtower.helloWorld",
         "title": "Hello World"
